@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+
+	
+	 <!-- webpasser 控制管理 -->
+    <package name="spiderManage" namespace="/spiderManage" extends="default">
+    
+    	<action name="*" class="com.hxt.webpasser.action.TaskManageAction" method="{1}">
+    	
+            <result name="taskListManagePage" type="freemarker">/spiderManage/taskList.html</result>
+  
+		
+			<result name="jsonData" type="json">
+    			<param name="root">jsonData</param>
+    		</result>
+        </action>
+        
+    </package>
+
+	
+</struts>  

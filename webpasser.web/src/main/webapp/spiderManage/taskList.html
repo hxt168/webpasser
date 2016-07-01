@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8">
+	<title>taskList</title>
+	<script src = "${base}/spiderManage/js/jquery.js"></script>
+
+
+</head>
+<body>
+
+<a href="${base}/spiderManage/editTaskXmlPage.action">添加</a> 
+
+<div id="taskListDiv">
+
+<ul>
+
+
+	<li></li>
+
+
+</ul>
+
+
+</div>
+
+<script>
+
+
+	function load()
+	{
+		var id="";
+		jQuery.post("${base}/spiderManage/getTaskList.action?etc=" + new Date().getTime(), {"id":id}, function (data) {
+	
+			if(data&&data.list)
+			{
+				var html="";
+				var list=data.list;
+				for(var i=0;i<list.length;i++){
+	
+					html+="<li>"+list[i].taskName+" <a href='${base}/spiderManage/editTaskXmlPage.action?taskName="+list[i].taskName+"' >编辑xml</a> "
+					+"<a href='${base}/spiderManage/taskInfoManagePage.action?taskName="+list[i].taskName+"' >详情</a></li>";
+				}
+				$('#taskListDiv').html(html);
+			}
+		});
+	
+		
+		
+	}
+
+	$(function () {
+		load();
+		
+		
+		
+	
+	});
+
+</script>
+
+
+
+</body>
+</html>

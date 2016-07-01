@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8">
+	<title>taskList</title>
+	<script src = "${base}/spiderManage/js/jquery.js"></script>
+	<style>
+	.opBtn{
+		display: none;
+	}
+	
+	</style>
+
+</head>
+<body>
+<div>
+  <a href="${base}/spiderManage/taskListManagePage.action">返回</a>
+</div>
+
+
+<div id="taskInfoDiv">
+
+<div>任务名称：${taskName}</div>
+<br/>
+
+
+<div id="runInfo">
+	状态：<span id="runState"></span>
+	开始时间：<span id="startTime"></span>
+	结束时间：<span id="endTime"></span>
+	<div>
+	线程数：<span id="runThreadNum"></span>
+	待抓取数量：<span id="pendingCount"></span>
+	本次已抓取数量：<span id="visitedCount"></span>
+	总下载量：<span id="downSize"></span>
+
+<!-- 	全部抓取数量：<span id="allVisitedCount"></span>	 -->	
+	</div>
+	<div id="successUrlInfoDiv">
+	   	成功数量：<span id="successCount"></span> 
+	   <a href="${base}/spiderManage/readFileRecord.action?taskName=${taskName}&type=successUrl">成功链接(最多显示10000条)</a>
+		<!-- 	<div id="errorUrlInfos">
+			
+			</div> -->
+	</div>
+	
+	<div id="errorUrlInfoDiv">
+	   	失败数量：<span id="errorCount"></span> 
+	   <a href="${base}/spiderManage/readFileRecord.action?taskName=${taskName}&type=errorUrl">错误链接(最多显示10000条)</a>
+		<!-- 	<div id="errorUrlInfos">
+			
+			</div> -->
+	</div>
+	
+	
+</div>
+
+<button class="opBtn" id="opRun" onclick="operateTask(1)">启动</button> <button class="opBtn"  id="opPause" onclick="operateTask(2)">暂停</button> <button class="opBtn"  id="opReRun" onclick="operateTask(3)">恢复</button>  <button class="opBtn"  id="opStop" onclick="operateTask(4)">停止</button>
+
+</div>
+<br/>
+<br/>
+
+
+
+<div>
+     <div>定时执行：  </div>
+     <div> 当前定时规则：<span id="regularInfoId" style="color: blue">未设定</span> 	
+     		<button class="changeCornBtn" style="display: none;" id="startScheduler" onclick="startOrStopScheduler(1)">启动</button>
+			<button class="changeCornBtn" style="display: none;" id="stopScheduler" onclick="startOrStopScheduler(2)">关闭</button> 
+			<a href="javascript:void(0)" id="changeSchedulerABtn" onclick="openRegularDiv()">修改</a>
+			  </div>
+	 <div id="changeRegularDiv">
+			执行周期：
+			<select  name="taskCircle" id="regularTaskCircle" onchange="changeTaskCircle()" style="width: 56px;">
+				<option value="0">每隔</option>
+				<option value="1" selected="selected" >每天</option>
+				<option value="2">每周</option>
+				<option value="3">每月</option>
+				<option value="4">自定义</option>
+			</select>
+			<span id="regularDaySpan">
+			
+			<select class="dhxform_select" name="day" id="regularDay" style="width: 46px;">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="10">10</option>
+				<option value="11">11</option>
+				<option value="12">12</option>
+				<option value="13">13</option>
+				<option value="14">14</option>
+				<option value="15">15</option>
+				<option value="16">16</option>
+				<option value="17">17</option>
+				<option value="18">18</option>
+				<option value="19">19</option>
+				<option value="20">20</option>
+				<option value="21">21</option>
+				<option value="22">22</option>
+				<option value="23">23</option>
+				<option value="24">24</option>
+				<option value="25">25</option>
+				<option value="26">26</option>
+				<option value="27">27</option>
+				<option value="28">28</option>
+				<option value="29">29</option>
+				<option value="30">30</option>
+				<option value="31">31</option>
+			</select> 号
+			
+			</span>
+
+			
+			<select class="dhxform_select" name="week" id="regularWeek" style="width: 66px;">
+				<option value="MON">星期一</option>
+				<option value="TUE">星期二</option>
+				<option value="WED">星期三</option>
+				<option value="THU">星期四</option>
+				<option value="FRI">星期五</option>
+				<option value="SAT">星期六</option>
+				<option value="Sun">星期天</option>
+			</select>
+			<span id="regularHourSpan">
+				<select class="dhxform_select" name="hour" id="regularHour" style="width: 46px;">
+			      	<option value="0">0</option>
+			      	<option value="1">1</option>
+			      	<option value="2">2</option>
+			      	<option value="3">3</option>
+			      	<option value="4">4</option>
+			      	<option value="5">5</option>
+			      	<option value="6">6</option>
+			      	<option value="7">7</option>
+			      	<option value="8">8</option>
+		      	</select> 时
+	      	</span>
+	      	<span id="regularMinuteSpan">
+		      	<select class="dhxform_select" name="minute" id="regularMinute" style="width: 46px;">
+			      	<option value="0">0</option>
+			      	<option value="1">1</option>
+			      	<option value="2">2</option>
+			      	<option value="3">3</option>
+			      	<option value="4">4</option>
+			      	<option value="5">5</option>
+			      	<option value="6">6</option>
+			      	<option value="7">7</option>
+			      	<option value="8">8</option>
+		      	</select> 分
+	      	</span>
+	      	<span id="cronSpanId">
+	      		quartz cron表达式：<input type="text" value="" id="cronValueId" style="width:150px"  />
+	      	</span>
+	      	<button class="changeCornBtn" style="display: none;" id="addCorn" onclick="postSaveCron(1)">添加</button>
+			<button class="changeCornBtn" style="display: none;" id="changeCorn" onclick="postSaveCron(2)">保存</button>
+			
+	 </div>
+	<div>
+	    
+	
+	</div>
+</div>
+
+
+<br/>
+<br/>
+
+
+
+
+<div>
+     <div>单个url测试（需在任务停止状态）：</div>
+	 <div>
+	  		url: <input  type="text" id="textUrlInput" style="width: 500px" />
+	        <button class="" onclick="testOneUrl()">测试</button>
+	 </div>
+	<div>
+	      <textarea id="showCon" rows="20" cols="120" ></textarea>
+	
+	</div>
+</div>
+
+<script>
+var taskName="${taskName}";
+var stateArr=["未运行","运行中","暂停","停止"];
+
+
+function testOneUrl(){
+	 $("#showCon").html("")
+	var url=$("#textUrlInput").val();
+	if(!url){
+		alert("不能为null");
+		return;
+	}
+	var queryUrl="${base}/spiderManage/testOneUrlCatch.action";
+	var postData={url:url,taskName:taskName}
+	$.post(queryUrl,postData,function(result){
+
+		  if(result&&result.data){
+			//var html="";
+			 var data=result.data;
+			 $("#showCon").html(format(data))
+
+		  }else{
+			  alert("测试失败!");
+		  }
+		  
+	  },"json");
+	
+	
+}
+
+function openRegularDiv(){
+	if($("#changeRegularDiv").is(":hidden")){
+		$("#changeRegularDiv").show()
+	}else{
+		$("#changeRegularDiv").hide()
+	}
+	
+	
+}
+
+function changeTaskCircle(){
+	
+	var op=$("#regularTaskCircle").val();
+	if(op==0){ //每隔
+		$("#regularDaySpan").hide();
+		$("#regularWeek").hide();
+		$("#regularHourSpan").show();
+		$("#regularMinuteSpan").hide();
+		$("#cronSpanId").hide();	
+	}else if(op==1){
+		$("#regularDaySpan").hide();
+		$("#regularWeek").hide();
+		$("#regularHourSpan").show();
+		$("#regularMinuteSpan").show();
+		$("#cronSpanId").hide();	
+	}else if(op==2){
+		$("#regularDaySpan").hide();
+		$("#regularWeek").show();
+		$("#regularHourSpan").show();
+		$("#regularMinuteSpan").show();
+		$("#cronSpanId").hide();	
+	}else if(op==3){
+		$("#regularDaySpan").show();
+		$("#regularWeek").hide();
+		$("#regularHourSpan").show();
+		$("#regularMinuteSpan").show();
+		$("#cronSpanId").hide();	
+	}else if(op==4){
+		$("#regularDaySpan").hide();
+		$("#regularWeek").hide();
+		$("#regularHourSpan").hide();
+		$("#regularMinuteSpan").hide();
+		$("#cronSpanId").show();	
+	}
+	
+}
+
+function postSaveCron(op){
+	var timeString="";
+	var cron="";
+	var taskCircle=$("#regularTaskCircle").val();
+	if(taskCircle==0){ //每隔
+		var h=$("#regularHour").val();
+		//var m=$("#regularMinute").val();
+		cron="0 0 */"+h+" * * ?";
+		timeString="每隔"+h+"小时";
+	}else if(taskCircle==1){
+		var h=$("#regularHour").val();
+		var m=$("#regularMinute").val();
+		
+		cron="0 "+m+" "+h+" ? * *";
+		timeString="每天"+h+"时"+m+"分";
+	}else if(taskCircle==2){
+		var h=$("#regularHour").val();
+		var m=$("#regularMinute").val();
+		var w=$("#regularWeek").val();
+		cron="0 "+m+" "+h+" ? * "+w;
+		var wtext=$("#regularWeek").find("option:selected").text();
+		timeString="每周"+wtext+h+"时"+m+"分";
+	}else if(taskCircle==3){
+		var d=$("#regularDay").val();
+		var h=$("#regularHour").val();
+		var m=$("#regularMinute").val();
+		cron="0 "+m+" "+h+" "+d+" * ?";
+		timeString="每月"+d+"号"+h+"时"+m+"分";
+	}else if(taskCircle==4){
+		cron=$("#cronValueId").val();
+		timeString="自定义cron值："+cron;
+	}
+
+	jQuery.post("${base}/spiderManage/addOrChangeScheduler.action?etc=" + new Date().getTime(), {"taskName":taskName,"op":op,"cronExpression":cron,"taskCircle":taskCircle,"timeString":timeString}, function (result) {
+
+		if(result&&result.result=="success")
+		{
+			alert("操作成功！")
+			location.reload()
+
+		}else{
+			alert("操作失败！")
+		}
+	});
+	
+}
+
+function startOrStopScheduler(op){
+	
+	jQuery.post("${base}/spiderManage/startOrStopScheduler.action?etc=" + new Date().getTime(), {"taskName":taskName,"op":op}, function (result) {
+
+		if(result&&result.result=="success")
+		{
+			alert("操作成功！")
+			location.reload()
+
+		}else{
+			alert("操作失败！")
+		}
+	});
+	
+}
+
+function putNumToSelect(id,startNum,endNum){
+	var html="";
+	for(var i=startNum;i<=endNum;i++){
+		html+='<option value="'+i+'">'+i+'</option>';
+	}
+	
+	$("#"+id).html(html);
+	
+}
+
+function operateTask(op)
+{
+	
+	jQuery.post("${base}/spiderManage/operateTask.action?etc=" + new Date().getTime(), {"taskName":taskName,"op":op}, function (result) {
+
+		if(result&&result.result=="success")
+		{
+			location.reload()
+			
+			
+		}
+	});
+
+	
+	
+}
+
+
+
+function format(txt,compress/*是否为压缩模式*/){/* 格式化JSON源码(对象转换为JSON文本) */  
+        var indentChar = '    ';   
+     /*   if(/^\s*$/.test(txt)){   
+            alert('数据为空,无法格式化! ');   
+            return;   
+        }   
+        try{var data=eval('('+txt+')');}   
+        catch(e){   
+            alert('数据源语法错误,格式化失败! 错误信息: '+e.description,'err');   
+            return;   
+        };   */
+		var data=txt
+        var draw=[],last=false,This=this,line=compress?'':'\n',nodeCount=0,maxDepth=0;   
+           
+        var notify=function(name,value,isLast,indent/*缩进*/,formObj){   
+            nodeCount++;/*节点计数*/  
+            for (var i=0,tab='';i<indent;i++ )tab+=indentChar;/* 缩进HTML */  
+            tab=compress?'':tab;/*压缩模式忽略缩进*/  
+            maxDepth=++indent;/*缩进递增并记录*/  
+            if(value&&value.constructor==Array){/*处理数组*/  
+                draw.push(tab+(formObj?('"'+name+'":'):'')+'['+line);/*缩进'[' 然后换行*/  
+                for (var i=0;i<value.length;i++)   
+                    notify(i,value[i],i==value.length-1,indent,false);   
+                draw.push(tab+']'+(isLast?line:(','+line)));/*缩进']'换行,若非尾元素则添加逗号*/  
+            }else   if(value&&typeof value=='object'){/*处理对象*/  
+                    draw.push(tab+(formObj?('"'+name+'":'):'')+'{'+line);/*缩进'{' 然后换行*/  
+                    var len=0,i=0;   
+                    for(var key in value)len++;   
+                    for(var key in value)notify(key,value[key],++i==len,indent,true);   
+                    draw.push(tab+'}'+(isLast?line:(','+line)));/*缩进'}'换行,若非尾元素则添加逗号*/  
+                }else{   
+                        if(typeof value=='string')value='"'+value+'"';   
+                        draw.push(tab+(formObj?('"'+name+'":'):'')+value+(isLast?'':',')+line);   
+                };   
+        };   
+        var isLast=true,indent=0;   
+        notify('',data,isLast,indent,false);   
+        return draw.join('');   
+ }
+
+
+
+function load()
+{
+	
+	jQuery.post("${base}/spiderManage/getTaskInfo.action?etc=" + new Date().getTime(), {"taskName":taskName}, function (result) {
+
+		if(result&&result.data)
+		{
+			var data=result.data;
+			var stateCn=stateArr[data.runState];
+			$('#runState').text(stateCn);
+			if(data.runState==0)
+			{
+				$('#opRun').show();
+			}else{
+				if(data.runState==1)  //运行中
+				{
+					$('#opPause').show();
+					$('#opStop').show();
+				}else if(data.runState==2)
+				{
+					$('#opReRun').show();
+					$('#opStop').show();
+				}else if(data.runState==3)
+				{
+					$('#opRun').show();
+				}
+				
+				$('#runThreadNum').text(data.runThreadNum);
+				$('#pendingCount').text(data.pendingCount);
+				$('#visitedCount').text(data.visitedCount);
+				$('#successCount').text(data.successCount);
+				$('#errorCount').text(data.errorCount);
+				$('#downSize').text(data.downSize);
+				$('#startTime').text(data.startTime);
+				$('#endTime').text(data.endTime);
+		/* 		$('#allVisitedCount').text(data.allVisitedCount); */
+				/* if(data.errorUrls){
+					errorUrlList=data.errorUrls;
+					var errorHtml="";
+					for(var i=0;i<errorUrlList.length;i++){
+						errorHtml+=errorUrlList[i].url+"</br>";
+						
+					}
+					$('#errorUrlInfos').html(errorHtml)
+				} */
+			}
+			if(data.spiderScheduler){  //已有
+				if(data.spiderScheduler.isRun==1){  //已启动
+					$("#stopScheduler").show()
+				}else{
+					$("#startScheduler").show()
+				}
+				if(data.spiderScheduler.timeString){
+					$("#regularInfoId").html(data.spiderScheduler.timeString)
+				}
+				$("#changeRegularDiv").hide()
+				$("#changeCorn").show()
+			}else{
+				$("#addCorn").show()
+				$("#changeSchedulerABtn").hide()
+			}
+			
+		/* 	var html="";
+			var list=data.list;
+			for(var i=0;i<list.length;i++){
+
+				html+="<li>"+list[i].taskName+"<a href='${base}/spiderManage/taskInfoManagePage.action?taskName="+list[i].taskName+"' >详情</a></li>";
+			}
+			$('#taskListDiv').html(html); */
+			
+			
+		}
+	});
+
+	
+	
+}
+
+	$(function () {
+		putNumToSelect("regularDay",1,31)
+		putNumToSelect("regularHour",0,23)
+		putNumToSelect("regularMinute",0,59)
+		load();
+		changeTaskCircle()
+	
+	});
+
+</script>
+
+
+
+</body>
+</html>

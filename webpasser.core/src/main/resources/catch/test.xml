@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<task name="xunbo" >
+
+
+	<metadata description="xunbo de" enable="0"  >
+
+	</metadata>
+
+	
+
+	<!--  timeOutSecond:抓取时请求超时时间(单位：秒)
+	      errorRetry:抓取失败重连次数
+		  fetchPrepareDelay:抓取前延迟时间(单位：秒)，防止对某个网站太频繁爬
+	
+	 -->
+	<fetchConfig charset="gbk" timeOutSecond="5" errorRetry="5" errorDelayTime="10"  fetchPrepareDelayTime="1" >
+	
+	
+		    <userAgent>Mozilla/5.0 (compatible; YodaoBot/1.0; http://www.yodao.com/help/webmaster/spider/; )</userAgent>
+	    
+			<headers>
+				<header name="Referer" value="http://www.xiamp4.com" />
+			</headers>
+	
+			     	<!-- HTTP Cookie -->
+			<cookies>
+				<!-- cookie  name="ggg" value="" host="" path=""  -->
+				<cookie name="ggg" value="1"  />
+			</cookies>
+			
+			<proxies path="ip.txt">
+			
+			</proxies>
+			
+	
+	</fetchConfig>
+	
+	<scope>
+		<limitHost value="www.xiamp4.com" />
+	     <rule type="regex" value="http://www.xiamp4.com/GvodHtml/\d+\_*\d*.html" />
+	</scope>
+	
+
+	
+	<seeds>
+<!-- 		<seed  url="http://www.xiamp4.com/GvodHtml/11.html" /> -->
+			<seed name="sss" url="http://www.xiamp4.com/Html/GP8369.html" />
+		
+	</seeds>
+	
+	<page>
+	
+		<scope>
+		   <rule type="regex" value="http://www.xiamp4.com/GvodHtml/\d+\_*\d*.html" />
+		</scope>
+		<!-- 列表数据挖取 -->
+	     <digLink  >
+	          <rules>
+						<rule type="xpath" value="//ul[@class='mlist']//li//a[@href]" attr="href"  />
+						 <rule type="combine" value="http://www.xiamp4.com[$this]" />
+				</rules>
+	     </digLink>
+	     <!-- 分页挖取 -->
+		  <digLink >
+	          <rules>
+						<rule type="xpath" value="//div[@id='pages']//a[@href]" attr="href"  />
+						 <rule type="combine" value="http://www.xiamp4.com[$this]" />
+				</rules>
+	     </digLink>
+	</page>
+	
+	
+	<page name="films">
+	
+		<scope>
+		   <rule type="regex" value="http://www.xiamp4.com/Html/GP\d+.html" />
+		</scope>
+	
+		<field name="title" >
+			<rules>
+				 <rule type="xpath" value="//div[@class='pic']//img[@alt]" attr="alt" />
+		<!-- 		 <rule type="regex" value="" />
+				  <rule type="cut" >
+				     <pre>23</pre>
+				     <end>32</end>
+				  </rule>
+				  <rule type="replace" >
+				  
+				     	<oldChars>wee</oldChars>
+				     	
+				        <newChars>ewe</newChars>
+				  </rule>
+				   html标签过滤
+				   <rule type="tagDel" > 
+				     	<tag>a</tag>
+				     	<tag>li</tag>
+				  </rule>
+				   <rule type="other" classPath="dddd"> 
+
+				  </rule> -->
+				  
+			</rules>
+			
+			
+			
+		</field>
+		
+		<field name="mid" >
+			<rules>
+				 <rule type="combine" value="[$url]" />
+				  <rule type="cut" >
+				     <pre>Html/GP</pre>
+				     <end>.html</end>
+				  </rule>
+			</rules>
+		
+		</field>
+		
+		<field name="year" >
+			<rules>
+				 <rule type="xpath" value="//div[@class='info']//ul//li[1]" exp="text()" />
+				  <rule type="cut" >
+				     <pre>年代：</pre>
+				     <end> </end>
+				  </rule>
+			</rules>
+		
+		</field>
+		
+		<field name="content" >	
+			 <rules>
+				 <rule type="xpath" value="//div[@class='mox juqing']//div[@class='endtext']" exp="text()" />
+			</rules>
+			
+		</field>
+		
+		<field name="type" isList="1" joinMark=" ">	
+			 <rules>
+				 <rule type="xpath" value="//div[@class='info']//ul//li[2]//a" exp="text()" />
+			</rules>
+			
+		</field>
+		
+		<field name="down" isList="1" >
+		   	     	<rules>
+						<rule type="xpath" value="//div[@class='ndownlist']" exp="html()"   />
+						  <rule type="cut" >
+				    		 <pre>GvodUrls = "</pre>
+				     		<end>";</end>
+						  </rule>
+						  <!-- 必须最后用  -->
+						  <rule type="split" >
+						   		<param name="splitMark" value="###" />
+						  </rule>
+					</rules>
+		   	   
+					
+		   
+		</field>
+		
+		<field name="videos" isList="1" >
+		
+		<!-- 
+		
+		   "videos":
+		          "youku":
+		                 "videoName":
+		                 "videoUrl":
+		          "tudou":
+		       
+		  or
+		       
+		   "videos":
+		         
+	                 "videoName":
+	                 "videoUrl":
+		                 
+		             "videoName":
+	                 "videoUrl":
+	                 
+	                 
+	       or
+	       
+	           "videos":
+		           ["videoName":
+	                 "videoUrl":
+     
+		             "videoName":
+	                 "videoUrl":]
+	               ["videoName":
+	                 "videoUrl":
+     
+		             "videoName":
+	                 "videoUrl":]  
+		          
+		 -->
+		
+		    <rules>
+				 <rule type="xpath" value="//div[@class='hdownlist']" />
+			</rules>
+			
+	<!-- 	   <list>
+		   	   <field name="videoName" >
+		   	     	<rules>
+						<rule type="xpath" value="//li//p/text()" />
+					</rules>
+		   	   
+		   	   </field>
+		   	   
+		   	    <field name="videoUrl" >
+		   	      	<rules>
+						<rule type="xpath" value="//li//input[@value]" attr="value"  />
+					</rules>
+		   	         
+		   	   </field>
+		   
+		   </list>
+		    -->
+		     <field name="videoName" isList="1" >
+		   	     	<rules>
+						<rule type="xpath" value="//li//p[@class='name']" exp="text()" />
+					</rules>
+		   	   
+		   	   </field>
+		   	   
+		   	   <field name="videoUrl" isList="1" >
+		   	      	<rules>
+						<rule type="xpath" value="//li//span//a[2]" attr="onclick"  />
+						  <rule type="cut" >
+				    		 <pre><![CDATA[start(']]></pre>
+				   			  <end><![CDATA[')]]></end>
+				 		 </rule>
+					</rules>
+		   	         
+		   	  </field>
+		   
+		</field>
+		
+
+		
+		<field name="other" >
+		    <rules>
+				 <rule type="xpath" value="//div[@class='down_list']" />
+			</rules>
+			<linkPage name="playUrl">
+			   <param name="mid" value="[$mid]" />
+			   
+				<digLink>
+				   <rules>
+						<rule type="xpath" value="//div[@class='play-list']//a[@href]" attr="href"  />
+						<rule type="combine" value="http://www.xiamp4.com[$this]" />
+					</rules>
+				</digLink>
+				
+			</linkPage>
+		
+		   
+		</field>
+		
+		
+	</page>
+	
+	<page name="playUrl">
+	
+		<param name="mid" />
+	
+		<scope>
+		    <rule type="regex" value="http://www.xiamp4.com/play/play\d+\-\d+\-\d+\.html" />
+		</scope>
+	
+		<field name="title" >
+			<rules>	
+				  <rule type="cut" >
+				     <pre><![CDATA[<title>]]></pre>
+				     <end><![CDATA[</title>]]></end>
+				  </rule>
+
+			</rules>
+	
+		</field>
+		<field name="pid" >
+				<rules>
+				 <rule type="combine" value="[$mid]" />
+			</rules>
+		</field>
+		
+	 </page>
+	 
+	 
+	 <resultHandler target="handleResultMapInterface" class="com.hxt.webpasser.persistent.impl.VideoHandleResultServcie">
+	 		<!-- <property name="taskName" ref="" ></property> -->
+	 		<constructor >
+	 		      <arg ref="taskName" ></arg>
+	 		</constructor>
+	 </resultHandler>
+	    
+	 
+	 
+
+	
+</task>

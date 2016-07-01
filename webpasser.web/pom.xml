@@ -1,0 +1,71 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  	<parent>
+		  <groupId>com.hxt.webpasser</groupId>
+		<artifactId>webpasser.parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+  
+  <artifactId>webpasser.web</artifactId>
+  <packaging>war</packaging>
+  
+  
+  	<dependencies>
+  		<dependency>
+			<groupId>com.hxt.webpasser</groupId>
+			<artifactId>webpasser.project</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+  	
+  		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.struts.xwork</groupId>
+			<artifactId>xwork-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-json-plugin</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<classifier>jdk15</classifier>
+		</dependency>
+  
+  	</dependencies>
+  	
+  	
+	<build>
+		<finalName>webpasser</finalName>
+		<plugins>
+	
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>tomcat-maven-plugin</artifactId>
+				<version>1.1</version>
+				<configuration>
+					<port>8080</port>
+					<path>/webpasser</path>
+					<!-- <charset>${project.build.sourceEncoding}</charset>
+					<uriEncoding>${project.build.sourceEncoding}</uriEncoding> -->
+					 <charset>utf-8</charset>
+					<uriEncoding>utf-8</uriEncoding>
+					<warSourceDirectory>target/${project.build.finalName}</warSourceDirectory>
+					<!-- <classesDir>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</classesDir> -->
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	
+  
+</project>

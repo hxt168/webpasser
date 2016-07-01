@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task description="人民网rss" >
+
+
+	<!--  timeOutSecond:抓取时请求超时时间(单位：秒)
+	      errorRetry:抓取失败重连次数
+	      errorDelayTime: 抓取失败后等待时间
+		  fetchPrepareDelay:抓取前延迟时间(单位：秒)，防止对某个网站太频繁爬
+		  
+		  runThreadNum:  线程数
+		  charset:编码  (如果设为auto，会根据返回的页面编码标志取，如果取不到，可能会报错)
+	 -->
+	<fetchConfig charset="auto" timeOutSecond="5" errorRetry="5" errorDelayTime="10" runThreadNum="5"  fetchPrepareDelayTime="2" >
+	
+	
+		    <userAgent>Mozilla/5.0 (compatible; WebpassBot/1.0; )</userAgent>
+	    
+			<headers>
+
+			</headers>
+	
+			     	<!-- HTTP Cookie -->
+			<cookies>
+				<!-- cookie  name="ggg" value="" host="" path=""  -->
+				<!-- <cookie name="ggg" value="1"  /> -->
+			</cookies>
+			
+	
+	</fetchConfig>
+	
+
+	<seeds>
+		<seed url="http://www.people.com.cn/rss/politics.xml" /> 
+		<seed url="http://www.people.com.cn/rss/sports.xml" /> 
+
+	
+	</seeds>
+	
+	<page>
+	
+		<scope>
+		   <rule type="regex" value="http://[a-zA-Z0-9\/]*.people.com.cn/rss/[a-zA-Z0-9]*.xml" />
+		</scope>
+	
+	     <!-- rss挖取 -->
+		  <digLink >
+	          <rules>
+						 <rule type="xmlxpath" value="//item//link" exp="text()" />
+				</rules>
+	     </digLink>
+	</page>
+	
+	
+	<page name="news">
+	
+		<scope>
+		   <rule type="regex" value="http://(.*).people.com.cn/(.*).html" />
+		</scope>
+	
+<!-- 		<field name="jsonfield" >
+			<rules>
+				 <rule type="jsonpath" value="$.album_list[0].pushFlag" exp="text()" />
+	   			
+				  
+			</rules>
+			
+		</field> -->
+		
+		<field name="title" >	
+			 <rules>
+				
+				 
+				<rule type="xpath" value="//h1[@id='p_title']" exp="text()" />
+		
+			</rules>
+			
+		</field>
+		
+		
+		<field name="content" >	
+			 <rules>
+				 
+				<rule type="xpath" value="//div[@id='p_content']" exp="html()" />
+			</rules>
+			
+		</field>
+	
+		
+	</page>
+	
+
+	 
+ 	 <resultHandler target="handleResultMapInterface" classPath="com.hxt.webpasser.persistent.impl.DiskJsonHandleResult">
+	 			<property name="rootDir" value="downdir/path/people" ></property>
+	 			<property name="charSet" value="gbk" ></property>
+	 </resultHandler> 
+	 
+	 <triggers>
+	 
+	 </triggers>
+	 
+	
+</task>

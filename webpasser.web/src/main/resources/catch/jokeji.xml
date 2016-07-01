@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task description="笑话网站">
+
+
+	<!--  timeOutSecond:抓取时请求超时时间(单位：秒)
+	      errorRetry:抓取失败重连次数
+	      errorDelayTime: 抓取失败后等待时间
+		  fetchPrepareDelay:抓取前延迟时间(单位：秒)，防止对某个网站太频繁爬
+		  runThreadNum:  线程数
+		  charset:编码  (如果设为auto，会根据返回的页面编码标志取，如果取不到，可能会报错)
+	 -->
+	<fetchConfig charset="gbk" timeOutSecond="5" errorRetry="5" errorDelayTime="10" runThreadNum="10"  fetchPrepareDelayTime="0" >
+	
+	
+		    <userAgent>Mozilla/5.0 (compatible; webpasser;)</userAgent>
+	    
+			<headers>
+				<!-- <header name="Referer" value="http://www.jokeji.cn" /> -->
+			</headers>
+	
+			<!-- HTTP Cookie -->
+			<cookies>
+			<!--   <cookie  name="cookie1" value="" host="" path=""/>
+		           <cookie name="cookie2" value="1"  /> -->
+			</cookies>
+			
+			<!-- 代理设置： 从ip.txt中批量获读取ip,每次抓取随机使用某个ip -->
+			<!-- <proxies path="ip.txt"></proxies> -->
+			<!-- 单个代理获取 ，pollUrl的系统链接中需随机返回一个代理ip，格式是  ip:port  
+			     (当使用proxy标签时proxies失效) 
+			-->
+		<!-- 	<proxy pollUrl="http://localhost:8083/proxyManage/pollProxyIp.action?task=xunbo" ></proxy>
+	 -->
+	
+	</fetchConfig>
+	<!-- 抓取的域名范围 -->
+	<scope>
+		<limitHost value="www.jokeji.cn" />
+
+	</scope> 
+	
+	<!-- 种子 -->
+	<seeds>
+		<seed url="http://www.jokeji.cn/" /> 
+	</seeds>
+	
+	<page>
+	
+		<scope>
+		   <rule type="regex" value="http://www.jokeji.cn(.*)" />
+		</scope>
+		<!-- 链接挖取 -->
+	     <digLink  >
+	          <rules>
+					<rule type="jsoup" value="a[^href]" attr="href"  />
+						 <rule type="relativeToFullUrl"  /> 
+				</rules>
+	     </digLink>
+	     
+	</page>
+	
+	<!-- 解析具体的业务数据,处理后是一个map
+	  -->
+	<page>
+	
+		<scope>
+		   <rule type="regex" value="http://www.jokeji.cn/jokehtml/(.*).htm" />
+		</scope>
+	
+		<field name="title" >
+			 <!-- 提取某个字段数据的处理链  -->
+			<rules>
+	   			 	 <rule type="jsoup" value="title" exp="html()" />
+	   			  <rule type="cut" >
+				     <pre></pre>
+				     <end>_</end>
+				  </rule>
+				  
+				<!-- 
+				jsoup处理(jquery选择语法):
+					<rule type="jsoup" value="a[^href]" attr="href"  />
+					
+				html页面的xpath处理(尽量使用jsoup,xpath对某些不规范网页解析可能有问题):
+					<rule type="xpath" value="//div[@class='pic']//img[@alt]" attr="alt" />
+					
+				对xml页面的xpath处理
+					<rule type="xmlxpath" value="//item//link" exp="text()" />
+					
+				对json页面数据的处理
+					 <rule type="jsonpath" value="$.album_list[0].pushFlag" exp="text()" />
+					 
+		       	   正则处理:
+		          <rule type="regex" value="导[\\s　  ]+演[\\s　:】：]*([^&lt;]*)" exp="inner" />
+		          
+		                               截取:
+				  <rule type="cut" >
+				     <pre><![CDATA[截取的头字符串]]></pre>
+				     <end>截取的末字符串</end>
+				  </rule>
+				  
+				  替换：
+				  <rule type="replace" >
+				     	<oldChars>替换的源字符串</oldChars>
+				        <newChars>新字符串</newChars>
+				  </rule>
+				  
+				  html转text:
+				  <rule type="toText" >
+				  </rule>
+				  
+				 html标签过滤:
+				   <rule type="tagDel" > 
+				     	<tag>a</tag>
+				     	<tag>li</tag>
+				  </rule>
+				  
+				  字符串拼接: [$mid]表示<field name="mid" />的值,默认会有 [$fetchUrl],[$taskName]值
+				    <rule type="combine" value="xxx[$mid]xxx" />
+				    
+				 分割成数组(必须最后用):
+						  <rule type="split" >
+						   		<param name="splitMark" value="###" />
+						  </rule>
+				     -->
+				  
+			</rules>
+			
+		</field>
+
+		<field name="content" >	
+			 <rules>	
+			<rule type="jsoup" value="#text110"  />
+		
+			</rules>
+			
+		</field>
+	
+	</page>
+	
+
+	 <!-- 抓取解析后的数据持久化 -->
+	  <resultHandler target="handleResultMapInterface" classPath="com.hxt.webpasser.persistent.impl.DiskJsonHandleResult">
+	 			<property name="rootDir" value="downdir/path/jokeji" ></property>
+	 			<property name="charSet" value="gbk" ></property>
+	 </resultHandler>
+	 
+	 <!-- 抓取过程某阶段触发器 -->
+	 <triggers>
+	<!--   <trigger classPath="com.hxt.webpasser.trigger.impl.SpiderTaskProxyFeedbackTrigger">
+			构造器注入:   ref 是com.hxt.webpasser.spider.SpiderController的属性
+	 		 <constructor >
+	 		      <arg ref="taskName" ></arg>
+	 		      <arg ref="xmlTask" ></arg>
+	 		</constructor>
+	 		getter setter属性注入
+	 		<property name="taskName" ref="" ></property>
+	       </trigger> -->
+	     
+	 </triggers>
+	 
+	
+</task>

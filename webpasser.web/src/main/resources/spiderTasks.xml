@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tasks>
+
+	<task taskPath="catch/xunbo.xml" taskName="xunbo"/>
+
+    <task taskPath="catch/jokeji.xml" taskName="jokeji"/>
+     <task taskPath="catch/people_rss.xml" taskName="people_rss"/>
+</tasks>

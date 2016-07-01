@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8">
+	<title>taskList</title>
+	<script src = "${base}/spiderManage/js/jquery.js"></script>
+<script src = "${base}/spiderManage/js/base64.js"></script>
+
+</head>
+<body>
+
+<div id="taskListDiv">
+
+<h2 id="titleId">添加:</h2>
+
+<div>
+  <a href="${base}/spiderManage/taskListManagePage.action">返回</a>
+</div>
+
+<div> taskName: <input type="text" id="taskNameId" value="${taskName!}" readonly="readonly"  >  </div>
+ <textarea id="showCon" rows="30" cols="120" >${xmlContent1!}</textarea>
+
+<div> 	<button class="opBtn" id="opRun" onclick="save()">保存</button> </div>
+
+</div>
+
+<script>
+	var taskName="${taskName!}";
+	var isAdd=1;
+	function load()
+	{
+		var id="";
+		jQuery.post("${base}/spiderManage/getTaskXmlContent.action?etc=" + new Date().getTime(), {"taskName":taskName}, function (result) {
+	
+			if(result.data)
+			{
+				var xml=result.data;
+			/* 	xml=xml.replace(/#/g,"/");
+				alert(xml) */
+				xml=base64_decode(xml, false, 'text');
+				$('#showCon').text(xml);
+			}
+		});
+	
+		
+		
+	}
+	
+	
+	function save()
+	{
+		if(confirm("确定保存？")){
+			
+			var xml=$("#showCon").val();
+			var name=$("#taskNameId").val();
+			jQuery.post("${base}/spiderManage/addOrEditTask.action?etc=" + new Date().getTime(), {"taskName":name,"xml":xml,"isAdd":isAdd}, function (result) {
+				
+				if(result.result=="success")
+				{
+					
+					alert("操作成功！");
+					window.location.href="${base}/spiderManage/taskListManagePage.action";
+				}else{
+					alert(result.msg)
+				}
+			});
+			
+		}
+
+		
+	}
+	
+	
+
+	$(function () {
+		if(taskName){
+			isAdd=0; //编辑
+			$("#titleId").html("编辑：");
+			load();
+		}else{ //添加
+			$("#taskNameId").removeAttr("readonly");
+		}
+		
+	
+
+	});
+
+</script>
+
+
+
+</body>
+</html>

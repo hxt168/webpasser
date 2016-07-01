@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<task>
+
+
+	<!--  timeOutSecond:抓取时请求超时时间(单位：秒)
+	      errorRetry:抓取失败重连次数
+	      errorDelayTime: 抓取失败后等待时间
+		  fetchPrepareDelay:抓取前延迟时间(单位：秒)，防止对某个网站太频繁爬
+		  runThreadNum:  线程数
+		  charset:编码  (如果设为auto，会根据返回的页面编码标志取，如果取不到，可能会报错)
+	 -->
+	<fetchConfig charset="gbk" timeOutSecond="5" errorRetry="5" errorDelayTime="10" runThreadNum="5"  fetchPrepareDelayTime="5" >
+	
+		    <userAgent>Mozilla/5.0 (compatible; webpasser;)</userAgent>
+			<headers>
+				<header name="Referer" value="http://www.xiamp4.com" />
+			</headers>
+	
+		<!-- HTTP Cookie -->
+			<cookies>
+			<!--   <cookie  name="cookie1" value="" host="" path=""/>
+		           <cookie name="cookie2" value="1"  /> -->
+			</cookies>
+			
+			
+			
+			<!-- 代理设置： 从ip.txt中批量获读取ip,每次抓取随机使用某个ip -->
+			<!-- <proxies path="ip.txt"></proxies> -->
+			<!-- 单个代理获取 ，pollUrl的系统链接中需随机返回一个代理ip，格式是  ip:port  
+			     (当使用proxy标签时proxies失效) 
+			-->
+		<!-- 	<proxy pollUrl="http://localhost:8083/proxyManage/pollProxyIp.action?task=xunbo" ></proxy>
+	 -->
+
+	</fetchConfig>
+	
+	<!-- 抓取的域名范围 -->
+	<scope>
+		<limitHost value="www.xiamp4.com" />
+	</scope>
+	
+
+	<!-- 种子 -->
+	<seeds>
+		<seed  url="http://www.xiamp4.com/GvodHtml/16.html" />
+		<seed  url="http://www.xiamp4.com/GvodHtml/15.html" />
+		<seed  url="http://www.xiamp4.com/GvodHtml/7.html" />
+		<seed  url="http://www.xiamp4.com/GvodHtml/8.html" />
+
+	 <!--   3d 不用
+	 	<seed  url="http://www.xiamp4.com/GvodHtml/21.html" /> 
+		<seed  url="http://www.xiamp4.com/Html/GP22640.html" />
+		<seed name="sss" url="http://www.xiamp4.com/Html/GP8369.html" /> -->	
+	</seeds>
+	
+	<!-- 挖取网页链接，放入抓取队列 -->
+	<page>
+		<scope>
+		   <rule type="regex" value="http://www.xiamp4.com/GvodHtml/\d+\_*\d*.html" />
+		</scope>
+		<!-- 列表数据挖取 -->
+	     <digLink>
+	          <rules>
+						<rule type="xpath" value="//ul[@class='mlist']//li//a[@href]" attr="href"  />
+						 <rule type="combine" value="http://www.xiamp4.com[$this]" />
+				</rules>
+	     </digLink>
+	     <!-- 分页挖取 -->
+		  <digLink>
+	          <rules>
+						<rule type="xpath" value="//div[@id='pages']//a[@href]" attr="href"  />
+						 <rule type="combine" value="http://www.xiamp4.com[$this]" />
+				</rules>
+	     </digLink>
+	</page>
+	
+	<!-- 解析具体的业务数据,处理后是一个map
+	  -->
+	<page name="films">
+	
+		<scope>
+		   <rule type="regex" value="http://www.xiamp4.com/Html/GP\d+.html" />
+		</scope>
+		<field name="mid" >
+			<rules>
+				 <rule type="combine" value="[$fetchUrl]" />
+				  <rule type="cut" >
+				     <pre>Html/GP</pre>
+				     <end>.html</end>
+				  </rule>
+			</rules>
+		
+		</field>
+	
+		<field name="title" >
+			<rules>
+			 <!-- 提取某个字段数据的处理链  -->
+				 <rule type="xpath" value="//div[@class='pic']//img[@alt]" attr="alt" />
+		<!-- 
+				jsoup处理(jquery选择语法):
+					<rule type="jsoup" value="a[^href]" attr="href"  />
+					
+				html页面的xpath处理(尽量使用jsoup,xpath对某些不规范网页解析可能有问题):
+					<rule type="xpath" value="//div[@class='pic']//img[@alt]" attr="alt" />
+					
+				对xml页面的xpath处理
+					<rule type="xmlxpath" value="//item//link" exp="text()" />
+					
+				对json页面数据的处理
+					 <rule type="jsonpath" value="$.album_list[0].pushFlag" exp="text()" />
+					 
+		       	   正则处理:
+		          <rule type="regex" value="导[\\s　  ]+演[\\s　:】：]*([^&lt;]*)" exp="inner" />
+		          
+		                               截取:
+				  <rule type="cut" >
+				     <pre><![CDATA[截取的头字符串]]></pre>
+				     <end>截取的末字符串</end>
+				  </rule>
+				  
+				  替换：
+				  <rule type="replace" >
+				     	<oldChars>替换的源字符串</oldChars>
+				        <newChars>新字符串</newChars>
+				  </rule>
+				  
+				  html转text:
+				  <rule type="toText" >
+				  </rule>
+				  
+				 html标签过滤:
+				   <rule type="tagDel" > 
+				     	<tag>a</tag>
+				     	<tag>li</tag>
+				  </rule>
+				  
+				  字符串拼接: [$mid]表示<field name="mid" />的值,默认会有 [$fetchUrl],[$taskName]值
+				    <rule type="combine" value="xxx[$mid]xxx" />
+				    
+				 分割成数组(必须最后用):
+						  <rule type="split" >
+						   		<param name="splitMark" value="###" />
+						  </rule>
+				     -->
+				  
+			</rules>
+			
+			
+			
+		</field>
+		
+		
+		<field name="year" >
+			<rules>
+				 <rule type="xpath" value="//div[@class='info']//ul//li[1]" exp="text()" />
+				  <rule type="cut" >
+				     <pre>年代：</pre>
+				     <end> </end>
+				  </rule>
+			</rules>
+		
+		</field>
+		
+		<field name="skydrive" >
+			<rules>
+				 <rule type="xpath" value="//div[@class='skydrive']//ul" exp="html()" />
+			
+			</rules>
+		
+		</field>
+		
+		
+		
+		<field name="content" >	
+			 <rules>
+				 <rule type="xpath" value="//div[@class='mox juqing']//div[@class='endtext']" exp="text()" />
+			</rules>
+			
+		</field>
+		
+		<field name="vtype" >	
+			 <rules>
+				 <rule type="xpath" value="//div[@class='view']//div[@class='wz']//a[2]" exp="text()" />
+			</rules>
+			
+		</field>
+		
+		<field name="pic" >	
+			 <rules>
+				 <rule type="xpath" value="//div[@class='pic']//img[@src]" attr="src" />
+			</rules>
+			
+		</field>
+		
+		<field name="performers" isList="1" >	
+			 <rules>
+				 <rule type="xpath" value="//div[@class='info']//ul//li[3]//a" exp="text()" />
+			</rules>
+			
+		</field>
+		
+		<field name="place" >	
+			 <rules>
+				 <rule type="xpath" value="//div[@class='info']//ul//li[4]" exp="text()" />
+				   <rule type="cut" >
+				     <pre>地区：</pre>
+				     <end> </end>
+				  </rule>
+			</rules>
+			
+		</field>
+		
+		<field name="webUpdate" >	
+			 <rules>
+				 <rule type="xpath" value="//div[@class='info']//ul//li[5]//div[@class='fl']" exp="text()" />
+				   <rule type="cut" >
+				     <pre>更新周期：</pre>
+				     <end></end>
+				  </rule>
+			</rules>
+			
+		</field>
+		
+		
+		
+		<field name="status" >	
+			 <rules>
+				 <rule type="xpath" value="//div[@class='info']//ul//li[1]" exp="text()" />
+				  <rule type="cut" >
+				     <pre>状态：</pre>
+				     <end></end>
+				  </rule>
+			</rules>
+			
+		</field>
+		
+		<field name="type" isList="1" joinMark=" ">	
+			 <rules>
+				 <rule type="xpath" value="//div[@class='info']//ul//li[2]//a" exp="text()" />
+			</rules>
+			
+		</field>
+		
+		<field name="downlist" isList="1" >
+		   	     	<rules>
+						<rule type="xpath" value="//div[@class='ndownlist']" exp="html()"   />
+						  <rule type="cut" >
+				    		 <pre>GvodUrls = "</pre>
+				     		<end>";</end>
+						  </rule>
+						  <!-- 必须最后用  -->
+						  <rule type="split" >
+						   		<param name="splitMark" value="###" />
+						  </rule>
+					</rules>
+		   	   
+					
+		   
+		</field>
+		
+<!-- 		<field name="videos" isList="1" >
+		
+		
+		
+		   "videos":
+		          "youku":
+		                 "videoName":
+		                 "videoUrl":
+		          "tudou":
+		       
+		  or
+		       
+		   "videos":
+		         
+	                 "videoName":
+	                 "videoUrl":
+		                 
+		             "videoName":
+	                 "videoUrl":
+	                 
+	                 
+	       or
+	       
+	           "videos":
+		           ["videoName":
+	                 "videoUrl":
+     
+		             "videoName":
+	                 "videoUrl":]
+	               ["videoName":
+	                 "videoUrl":
+     
+		             "videoName":
+	                 "videoUrl":]  
+		          
+		
+		
+		    <rules>
+				 <rule type="xpath" value="//div[@class='hdownlist']" />
+			</rules>
+			
+		   <list>
+		   	   <field name="videoName" >
+		   	     	<rules>
+						<rule type="xpath" value="//li//p/text()" />
+					</rules>
+		   	   
+		   	   </field>
+		   	   
+		   	    <field name="videoUrl" >
+		   	      	<rules>
+						<rule type="xpath" value="//li//input[@value]" attr="value"  />
+					</rules>
+		   	         
+		   	   </field>
+		   
+		   </list>
+		   
+		     <field name="videoName" isList="1" >
+		   	     	<rules>
+						<rule type="xpath" value="//li//p[@class='name']" exp="text()" />
+					</rules>
+		   	   
+		   	   </field>  
+		   	   <field name="videoUrl" isList="1" >
+		   	      	<rules>
+						<rule type="xpath" value="//li//span//a[2]" attr="onclick"  />
+						  <rule type="cut" >
+				    		 <pre><![CDATA[start(']]></pre>
+				   			  <end><![CDATA[')]]></end>
+				 		 </rule>
+					</rules>
+		   	         
+		   	  </field>
+		   
+		</field>
+		
+
+		<field name="other" >
+		    <rules>
+				 <rule type="xpath" value="//div[@class='down_list']" />
+			</rules>
+			<linkPage name="playUrl">
+			   <param name="mid" value="[$mid]" />   
+				<digLink>
+				   <rules>
+						<rule type="xpath" value="//div[@class='play-list']//a[@href]" attr="href"  />
+						<rule type="combine" value="http://www.xiamp4.com[$this]" />
+					</rules>
+				</digLink>
+				
+			</linkPage>
+		
+		   
+		</field> -->
+		
+		
+	</page>
+	
+<!-- 	<page name="playUrl">
+	
+			<param name="mid" />
+			<scope>
+			    <rule type="regex" value="http://www.xiamp4.com/play/play\d+\-\d+\-\d+\.html" />
+			</scope>
+			<field name="title" >
+				<rules>	
+					  <rule type="cut" >
+					     <pre><![CDATA[<title>]]></pre>
+					     <end><![CDATA[</title>]]></end>
+					  </rule>
+	
+				</rules>
+		
+			</field>
+			<field name="pid" >
+					<rules>
+					 <rule type="combine" value="[$mid]" />
+				</rules>
+			</field>
+		
+	 </page> -->
+	 <!-- 抓取解析后的数据持久化 -->
+	 <resultHandler target="handleResultMapInterface" classPath="com.hxt.webpasser.persistent.impl.HandleResultServcieDemo">
+	 		<constructor >
+	 		      <arg ref="taskName" ></arg>
+	 		</constructor>
+	 </resultHandler> 
+	 <!-- 	
+	  <resultHandler target="handleResultMapInterface" classPath="com.hxt.webpasser.persistent.impl.VideoPushServcieImpl">
+	 		
+	 		<constructor >
+	 		      <arg ref="taskName" ></arg>
+	 		</constructor>
+	 </resultHandler>  
+	 -->
+	 <!-- 抓取过程某阶段触发器 -->
+	<!--  
+	 <triggers>
+	       <trigger target="" classPath="com.hxt.webpasser.trigger.impl.SpiderTaskProxyFeedbackTrigger">
+	 		 <constructor >
+	 		      <arg ref="taskName" ></arg>
+	 		      <arg ref="xmlTask" ></arg>
+	 		</constructor>
+	       </trigger>
+	 
+	 </triggers>
+	  -->
+	
+</task>

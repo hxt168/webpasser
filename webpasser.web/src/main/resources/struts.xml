@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>	
+	 <constant name="struts.i18n.encoding" value="UTF-8"/>
+	 		<!-- 指定默认编码集 ，作用于HttpServletRequest的setCharacterEncoding（）和freemarker，vilocity的输出 -->
+	<constant name="struts.configuration.xmlreload" value="true"/>
+			<!-- 当struts配置文件修改时是否自动加载 -->
+	<constant name="struts.devMode" value="true"/>
+			<!-- 开发模式下打印详细的错误信息 -->
+	<constant name="struts.ui.theme" value="xhtml"/>
+	
+	
+	 <constant name="struts.devMode" value="false" />
+	
+<!-- 
+<include file="struts-webpasser.xml" />
+
+	<package name="base" namespace="/" extends="struts-default">
+	
+		
+		
+	</package> -->
+	
+		 <!-- webpasser 控制管理 -->
+    <package name="spiderManage" namespace="/spiderManage" extends="json-default">
+    
+    	<action name="*" class="com.hxt.webpasser.action.TaskManageAction" method="{1}">
+    	
+            <result name="taskListManagePage" type="freemarker">/spiderManage/taskList.html</result>
+ 		 <result name="editTaskXmlPage" type="freemarker">/spiderManage/editTaskXmlPage.html</result>
+  
+		 <result name="taskInfoManagePage" type="freemarker">/spiderManage/taskInfo.html</result>
+			<result name="jsonData" type="json">
+    			<param name="root">jsonData</param>
+    		</result>
+        </action>
+        
+    </package>
+	
+	
+	
+</struts>  
